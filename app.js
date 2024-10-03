@@ -1,4 +1,5 @@
 const express = require("express");
+require('dotenv').config(); // Load environment variables
 const app = express();
 const cookiesParser = require('cookie-parser');
 const path = require('path');
@@ -7,7 +8,7 @@ const userRoutes = require('./src/routes/userRoutes');
 const ownerRoutes = require('./src/routes/ownerRouters');
 const productRoutes = require('./src/routes/productRoutes');
 
-const PORT = 3000;
+const PORT = process.env.PORT ?? 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended : true}));
 app.use(cookiesParser());

@@ -1,14 +1,13 @@
 const mongoose = require('mongoose');
+require('dotenv').config(); // Load environment variables
+const dbgr = require('debug')("development:mongoose");
 
 async function connectToDatabase() {
     try {
-        await mongoose.connect("mongodb://127.0.0.1:27017/bagMart", {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-        console.log("Connected with database");
+        await mongoose.connect(`${process.env.MONGODB_URI}/bagMart`);
+        dbgr("Connected with database");
     } catch (error) {
-        console.log('Failed to connect with database: ' + error);
+        dbgr('Failed to connect with database: ' + error);
     }
 }
 
