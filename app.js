@@ -4,6 +4,7 @@ const app = express();
 const cookiesParser = require('cookie-parser');
 const path = require('path');
 const connectToDatabase = require('./src/config/mongoose.connection');
+const indexRoutes = require('./src/routes/index');
 const userRoutes = require('./src/routes/userRoutes');
 const ownerRoutes = require('./src/routes/ownerRouters');
 const productRoutes = require('./src/routes/productRoutes');
@@ -14,15 +15,13 @@ app.use(express.urlencoded({ extended : true}));
 app.use(cookiesParser());
 app.use(express.static(path.join(__dirname,"public")));
 app.set("view engine","ejs");
+app.set('views', path.join(__dirname, 'src/views'));
 
 // connecting database 
 connectToDatabase();
 
 // routers here
-app.get("/",(req,res)=>{
-    res.send("Hellow Indal");
-})
-
+app.use('/',indexRoutes);
 app.use('/user',userRoutes);
 app.use('/owner',ownerRoutes);
 app.use('/product',productRoutes);
