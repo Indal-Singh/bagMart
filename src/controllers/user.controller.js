@@ -33,7 +33,6 @@ const register = async (req, res) => {
     // Create JWT token
     let token = generateToken(user);
     res.cookie("userToken", token, { httpOnly: true }); // Consider setting HttpOnly for security
-    req.flash("success", "Registration successful!"); // Flash success message
     return res.redirect('/shop');
   } catch (error) {
     req.flash("error", "Internal server error.");
@@ -67,7 +66,6 @@ const login = async (req, res) => {
     // Generate a token
     const token = generateToken(user);
     res.cookie("userToken", token, { httpOnly: true });
-    req.flash("success", "Login successful!"); // Flash success message
     return res.redirect('/shop');
     
   } catch (error) {
@@ -76,7 +74,13 @@ const login = async (req, res) => {
   }
 };
 
+const logout = (req,res) =>{
+  res.clearCookie("userToken");
+  return res.redirect('/');
+}
+
 module.exports = {
   register,
-  login
+  login,
+  logout
 };

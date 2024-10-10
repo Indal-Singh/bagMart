@@ -20,7 +20,6 @@ const verifyUserLoggedIn = async (req) =>{
             {
                 return true;
             }
-            req.user = user;
           } catch (error) {
             return false;
           }

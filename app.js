@@ -13,7 +13,7 @@ const flash = require('connect-flash');
 
 app.use(session({
     secret:process.env.SESSION_KEY,
-    saveUninitialized: false,
+    saveUninitialized: true,
     resave: false
 }));
 

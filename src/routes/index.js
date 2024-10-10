@@ -3,15 +3,14 @@ const router = express.Router();
 const { isLoggedIn } = require('../middlewares/isLoggedIn');
 const verifyUserLoggedIn = require('../utils/verifyUserLoggedIn');
 
-router.get('/',(req,res)=>{
-    const error = []; // Define or fetch your error messages here
-    if(verifyUserLoggedIn(req))
-    {
+router.get('/',async (req,res)=>{
+    const error = req.flash('error'); // Define or fetch your error messages here
+    const isLoggedIn = await verifyUserLoggedIn(req); // Await the verification
+
+    if (isLoggedIn) {
         return res.redirect('/shop');
-    }
-    else
-    {
-        return res.render("index",{error});
+    } else {
+        return res.render("index", { error });
     }
 });
 
