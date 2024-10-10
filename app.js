@@ -8,8 +8,17 @@ const indexRoutes = require('./src/routes/index');
 const userRoutes = require('./src/routes/userRoutes');
 const ownerRoutes = require('./src/routes/ownerRouters');
 const productRoutes = require('./src/routes/productRoutes');
+const session = require('express-session'); 
+const flash = require('connect-flash');
+
+app.use(session({
+    secret:process.env.SESSION_KEY,
+    saveUninitialized: false,
+    resave: false
+}));
 
 const PORT = process.env.PORT ?? 3000;
+app.use(flash());
 app.use(express.json());
 app.use(express.urlencoded({ extended : true}));
 app.use(cookiesParser());
@@ -22,7 +31,7 @@ connectToDatabase();
 
 // routers here
 app.use('/',indexRoutes);
-app.use('/user',userRoutes);
+app.use('/users',userRoutes);
 app.use('/owner',ownerRoutes);
 app.use('/product',productRoutes);
 

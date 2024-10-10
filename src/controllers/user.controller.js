@@ -2,22 +2,21 @@ const userModel = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const { generateToken } = require('../utils/generateToken');
 
+
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ // Use 400 for bad request
-        message: "All fields are required.",
-      });
+      req.flash("error", "All fields are required.");
+      return res.redirect("/"); // Redirect to the registration page
     }
 
     // Check if user already exists
     let userExist = await userModel.findOne({ email });
     if (userExist) {
-      return res.status(409).json({ // Use 409 for conflict
-        message: "User already exists with this email ID.",
-      });
+      req.flash("error", "User already exists with this email ID.");
+      return res.redirect("/"); // Redirect to the registration page
     }
 
     // Hash the password
@@ -34,34 +33,50 @@ const register = async (req, res) => {
     // Create JWT token
     let token = generateToken(user);
     res.cookie("userToken", token, { httpOnly: true }); // Consider setting HttpOnly for security
-
-    return res.status(201).json({ message: "User created." }); // Use 201 for resource creation
+    req.flash("success", "Registration successful!"); // Flash success message
+    return res.redirect('/shop');
   } catch (error) {
-    return res.status(500).json({ // Use 500 for server errors
-      message: error.message,
-    });
+    req.flash("error", "Internal server error.");
+    return res.redirect("/"); // Redirect to the registration page
   }
 };
 
-// const login = async (req,res) =>{
-//     try {
-//         let {email, password} = req.body;
-//         if(email && password)
-//         {
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-//         }
-//         else
-//         {
-//             return 
-//         }
-//     } catch (error) {
-//         return res.status(500).json({ // Use 500 for server errors
-//             message: error.message,
-//           });
-//     }
+    if (!email || !password) {
+      req.flash("error", "All fields are required.");
+      return res.redirect("/"); // Redirect to the login page
+    }
 
-// }
+    // Checking if user exists
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      req.flash("error", "User does not exist.");
+      return res.redirect("/"); // Redirect to the login page
+    }
+
+    // Compare password
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      req.flash("error", "Invalid credentials.");
+      return res.redirect("/"); // Redirect to the login page
+    }
+
+    // Generate a token
+    const token = generateToken(user);
+    res.cookie("userToken", token, { httpOnly: true });
+    req.flash("success", "Login successful!"); // Flash success message
+    return res.redirect('/shop');
+    
+  } catch (error) {
+    req.flash("error", "Internal server error.");
+    return res.redirect("/"); // Redirect to the login page
+  }
+};
 
 module.exports = {
   register,
+  login
 };
